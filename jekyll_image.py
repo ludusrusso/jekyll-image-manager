@@ -27,13 +27,16 @@ class ImageManager(object):
         md_mod = re.sub('!\[([^\]]*)\]\(([^\)]*)\)', repr_alg, self._md)
         return md_mod
 
-    def download(self, path):
+    def download_or_move(self, path):
         if not os.path.isdir(path):
              os.makedirs(path)
         for img in self.imgs:
             if validators.url(img):
                 print('\tdownloading: ', img)
+                print('\t', img, path)
                 wget.download(img, path)
+            else:
+                os.rename(os.path.join('.', img), os.path.join(path,img.split('/')[-1]))
 
 def main(jk_folder):
     import os
@@ -46,7 +49,7 @@ def main(jk_folder):
             content = content_file.read()
         im = ImageManager(content)
         img_path = 'assets/imgs/' + f.split('/')[-1]
-        im.download(os.path.join(jk_folder, img_path))
+        im.download_or_move(os.path.join(jk_folder, img_path))
         with open(f, 'w') as content_file:
             content = content_file.write(im.replace_path_imgs('/'+img_path))
 
