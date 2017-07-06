@@ -8,6 +8,14 @@ import wget
 class ImageManager(object):
     imgs = []
 
+    def setUp(self):
+        print 'starting'
+
+    def tearDown(self):
+        import os
+        os.system('rm -rf ./imgs')
+
+
     def __init__(self, md):
         self._md = md
         self._pattern = re.compile('!\[.*\]\((.*)\)')
@@ -32,3 +40,5 @@ class ImageManager(object):
         for img in self.imgs:
             if validators.url(img):
                 wget.download(img, path)
+
+class
