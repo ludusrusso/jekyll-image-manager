@@ -1,6 +1,11 @@
 import re
+import urllib.parse
+import os.path
+import os
+import validators
+import wget
 
-class ImageDetector(object):
+class ImageManager(object):
     imgs = []
 
     def __init__(self, md):
@@ -12,4 +17,18 @@ class ImageDetector(object):
         self.imgs = self._pattern.findall(self._md)
 
     def replace_path_imgs(self, path):
-        return self._md
+        def repr_alg(matchobj):
+            img = matchobj.group(2).split('/')[-1]
+            img = os.path.join(path, img)
+            ss = '![%s](%s)'%(matchobj.group(1), img)
+            return ss
+        md_mod = re.sub('!\[(.*)\]\((.*)\)', repr_alg, self._md)
+        return md_mod
+
+    def download(self, path):
+        if not os.path.isdir(path):
+             os.makedirs(path)
+        print('imgs', self.imgs)
+        for img in self.imgs:
+            if validators.url(img):
+                wget.download(img, path)
