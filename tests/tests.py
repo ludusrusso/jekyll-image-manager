@@ -3,9 +3,6 @@ from jekyll_image import ImageDetector
 
 class TestDetectImagesMarkdown(unittest.TestCase):
 
-    def setUp(self):
-        print('starting test')
-
     def test_no_image(self):
         ss = '''
             #Markdown
@@ -27,17 +24,30 @@ class TestDetectImagesMarkdown(unittest.TestCase):
         self.assertEqual(len(img_det.imgs), 1)
 
     def test_general(self):
-        pass
+        for i in range(1,20):
+            text, imgs = self.create_random_text_with_img(i)
+            img_det = ImageDetector(text)
+            self.assertTrue(img_det.imgs)
+            self.assertEqual(len(img_det.imgs), i)
+            for img in imgs:
+                self.assertTrue(img in img_det.imgs)
 
     def create_random_text_with_img(self, n_img):
         from faker import Factory
+        import random
+        import urllib.parse
+
         text = ''
         imgs = []
         fake = Factory.create('it_IT')
         for _ in range(n_img):
-            '\n'.join([text, fake.text()])
-            img = faker.file_name(category=None, extension='png')
-
+            text = text + '\n' + fake.text()
+            img = fake.file_path(depth=random.choice([2,3,4]), category=None, extension='png')
+            if random.choice([True, False]):
+                img = urllib.parse.urljoin(fake.uri(), img)
+            text = text + '\n'+ '![%s](%s)'%(fake.name(),img)
+            imgs.append(img)
+        return text, imgs
 
 if __name__ == '__main__':
     unittest.main()
