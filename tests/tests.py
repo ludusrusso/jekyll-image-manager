@@ -3,6 +3,13 @@ from jekyll_image import ImageManager
 
 class TestDetectImagesMarkdown(unittest.TestCase):
 
+    def setUp(self):
+        print('starting')
+
+    def tearDown(self):
+        import os
+        os.system('rm -rf ./imgs')
+
     def test_no_image(self):
         ss = '''
             #Markdown
