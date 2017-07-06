@@ -10,3 +10,6 @@ class ImageDetector(object):
 
     def detect_images(self):
         self.imgs = self._pattern.findall(self._md)
+
+    def replace_path_imgs(self, path):
+        return self._md

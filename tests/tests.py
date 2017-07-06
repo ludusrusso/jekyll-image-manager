@@ -32,6 +32,37 @@ class TestDetectImagesMarkdown(unittest.TestCase):
             for img in imgs:
                 self.assertTrue(img in img_det.imgs)
 
+    def test_path_replace_no(self):
+        ss = '''
+            #Markdown
+            with no image
+        '''
+        img_det = ImageDetector(ss)
+        self.assertEqual(ss, img_det.replace_path_imgs('/main'))
+
+    def test_path_replace_one(self):
+        ss = '''
+            #Markdown
+            with image
+            ![lkjsd](img.png)
+        '''
+
+        ss_expected_1 = '''
+            #Markdown
+            with image
+            ![lkjsd](/main/img.png)
+        '''
+
+        ss_expected_2 = '''
+            #Markdown
+            with image
+            ![lkjsd](main/img.png)
+        '''
+        img_det = ImageDetector(ss)
+        self.assertEqual(ss_expected_1, img_det.replace_path_imgs('/main'))
+        self.assertEqual(ss_expected_2, img_det.replace_path_imgs('main'))
+
+
     def create_random_text_with_img(self, n_img):
         from faker import Factory
         import random
@@ -48,6 +79,7 @@ class TestDetectImagesMarkdown(unittest.TestCase):
             text = text + '\n'+ '![%s](%s)'%(fake.name(),img)
             imgs.append(img)
         return text, imgs
+
 
 if __name__ == '__main__':
     unittest.main()
