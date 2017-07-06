@@ -10,10 +10,11 @@ import wget
 class ImageManager(object):
     imgs = []
 
-    def __init__(self, md):
+    def __init__(self, md, main_path='./'):
         self._md = md
         self._pattern = re.compile('!\[[^\]]*\]\(([^\)]*)\)')
         self.detect_images()
+        self._main_path = main_path
 
     def detect_images(self):
         self.imgs = self._pattern.findall(self._md)
@@ -32,11 +33,14 @@ class ImageManager(object):
              os.makedirs(path)
         for img in self.imgs:
             if validators.url(img):
-                print('\tdownloading: ', img)
-                print('\t', img, path)
-                wget.download(img, path)
+                if not os.path.exists(os.path.join(path, img.split('/')[-1])):
+                    print('\tdownloading: ', img)
+                    wget.download(img, path)
             else:
-                os.rename(os.path.join('.', img), os.path.join(path,img.split('/')[-1]))
+                print('\tmoving: ', img, ' > ', path)
+                if img[0] == '/':
+                    img = img[1:]
+                os.rename(os.path.join(self._main_path, img), os.path.join(path,img.split('/')[-1]))
 
 def main(jk_folder):
     import os
@@ -47,7 +51,7 @@ def main(jk_folder):
         content = ''
         with open(f, 'r') as content_file:
             content = content_file.read()
-        im = ImageManager(content)
+        im = ImageManager(content, main_path=jk_folder)
         img_path = 'assets/imgs/' + f.split('/')[-1]
         im.download_or_move(os.path.join(jk_folder, img_path))
         with open(f, 'w') as content_file:
