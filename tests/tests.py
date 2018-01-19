@@ -8,7 +8,7 @@ class TestDetectImagesMarkdown(unittest.TestCase):
 
     def tearDown(self):
         import os
-        os.system('rm -rf ./imgs*')
+        os.system('rm -rf ./imgs')
 
     def test_no_image(self):
         ss = '''
@@ -82,28 +82,13 @@ class TestDetectImagesMarkdown(unittest.TestCase):
 
     def test_download_img(self):
         import os
-        url = 'https://www.w3schools.com/css/trolltunga.jpg'
-        imgs = [['logo rokers', url]]
+        url = 'http://www.rokers.io/img/logo.png'
+        imgs = [['logo rokers', url], ['image', 'img.png']]
         text = self.create_random_text_from_img_list(imgs)
         img_det = ImageManager(text)
-        img_det.download_or_move('./imgs/')
+        img_det.download('./imgs/')
         self.assertTrue(os.path.isdir("./imgs/"))
-        self.assertTrue(os.path.exists("./imgs/trolltunga.jpg"))
-
-    def test_move_img(self):
-        import os
-        import wget
-        url = 'https://www.w3schools.com/css/trolltunga.jpg'
-        os.system('mkdir -p ./imgs')
-        wget.download(url, 'imgs/')
-        imgs = [['logo rokers', 'imgs/trolltunga.jpg']]
-        text = self.create_random_text_from_img_list(imgs)
-        img_det = ImageManager(text)
-        img_det.download_or_move('./imgs2/')
-        self.assertTrue(os.path.isdir("./imgs2/"))
-        self.assertTrue(os.path.exists("./imgs2/trolltunga.jpg"))
-        self.assertFalse(os.path.exists("./imgs/trolltunga.jpg"))
-
+        self.assertTrue(os.path.exists("./imgs/logo.png"))
 
     def create_random_text_list(self, n_imgs):
         from faker import Factory
